@@ -16,7 +16,7 @@ export const Styles = StyleSheet.create({
     },
     header: {
         backgroundColor: 'black',
-        paddingTop: Platform.OS === 'android' ? 60 : 0,
+        paddingTop: Platform.OS === 'android' ? 45 : 0,
         paddingBottom: 20
     },
     emptyContainer: {

@@ -3,36 +3,51 @@ import { StyleSheet, Dimensions } from "react-native";
 export const Styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
     },
-    topContainer: {
-        
+    cover: {
+        width: '100%',
+        height: Dimensions.get('window').height * 0.4,
+        resizeMode: 'contain',
+        marginBottom: 20
     },
-    title: {
-        position: 'absolute',
-        color: '#fff',
-        fontSize: 24,
-        fontWeight: 'bold',
-        top: 70,
-        alignSelf: 'center'
-    },
-    image: {
-        width: Dimensions.get('window').width,
-        height: 300,
-        resizeMode: 'cover'
-    },
-    chapterList: {
+    infoContainer: {
         padding: 20,
         backgroundColor: '#fff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        marginTop: -20
-        
+    },
+    likeContainer: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        padding: 10
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center'
+    },
+    description: {
+        fontSize: 14,
+        marginBottom: 20,
+        textAlign: 'center'
     },
     chapter: {
-        backgroundColor: '#F4F3FD',
+        backgroundColor: 'black',
         padding: 10,
+        paddingHorizontal: 20,
+        marginBottom: 5,
+        borderColor: 'black',
+        borderWidth: 1,
+        marginTop: 20,
         borderRadius: 10,
-        marginBottom: 5
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        borderBottomRightRadius: 30,
+        marginHorizontal: 20
+    },
+    chapterText: {
+        color: 'white',
+        fontSize: 20,
     }
 })
