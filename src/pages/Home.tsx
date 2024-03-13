@@ -20,7 +20,6 @@ import { useEffect, useState, useCallback, useContext } from 'react';
 import dataStorage from '../utils/DataStorage';
 import axios from 'axios';
 import { FlatList } from 'react-native-gesture-handler';
-import ConfigContext from '../context/configContext';
 
 interface mangaList {
     id: string
