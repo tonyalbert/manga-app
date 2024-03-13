@@ -26,7 +26,7 @@ class MangaApi {
             status: response.data.data.attributes.status,
             lastVolume: response.data.data.attributes.lastVolume,
             lastChapter: response.data.data.attributes.lastChapter,
-            cover: fileName ? `https://uploads.mangadex.org/covers/${response.data.data.id}/${fileName}` : 'https://th.bing.com/th/id/OIG4.aeVCLLm3n7HbdedGCau6?w=270&h=270&c=6&r=0&o=5&pid=ImgGn'
+            cover: fileName ? `https://uploads.mangadex.org/covers/${response.data.data.id}/${fileName}` : 'https://th.bing.com/th/id/OIG2.38ZS2m8wm3EbF7odr3Xh?pid=ImgGn'
         }
 
         return data;
@@ -60,7 +60,7 @@ class MangaApi {
                     status: manga.attributes.status,
                     lastVolume: manga.attributes.lastVolume,
                     lastChapter: manga.attributes.lastChapter,
-                    cover: fileName ? `https://uploads.mangadex.org/covers/${manga.id}/${fileName}` : 'https://th.bing.com/th/id/OIG4.aeVCLLm3n7HbdedGCau6?w=270&h=270&c=6&r=0&o=5&pid=ImgGn'
+                    cover: fileName ? `https://uploads.mangadex.org/covers/${manga.id}/${fileName}` : 'https://th.bing.com/th/id/OIG2.38ZS2m8wm3EbF7odr3Xh?pid=ImgGn'
                 };
 
                 mangaList.push(data);
@@ -96,7 +96,7 @@ class MangaApi {
                 status: manga.attributes.status,
                 lastVolume: manga.attributes.lastVolume,
                 lastChapter: manga.attributes.lastChapter,
-                cover: fileName ? `https://uploads.mangadex.org/covers/${manga.id}/${fileName}` : 'https://th.bing.com/th/id/OIG4.aeVCLLm3n7HbdedGCau6?w=270&h=270&c=6&r=0&o=5&pid=ImgGn'
+                cover: fileName ? `https://uploads.mangadex.org/covers/${manga.id}/${fileName}` : 'https://th.bing.com/th/id/OIG2.38ZS2m8wm3EbF7odr3Xh?pid=ImgGn'
             };
     
             data.push(mangaData);

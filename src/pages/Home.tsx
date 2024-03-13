@@ -1,12 +1,26 @@
 
-import { View, Text, TextInput, Image, ScrollView, TouchableOpacity, StyleSheet, Platform, LogBox, Button } from 'react-native';
+import { 
+    View, 
+    Text, 
+    TextInput, 
+    Image, 
+    ScrollView, 
+    TouchableOpacity, 
+    StyleSheet, 
+    Platform, 
+    LogBox, 
+    ActivityIndicator,
+    RefreshControl,
+    Button
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { mangaApi } from '../utils/mangaDex';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useCallback, useContext } from 'react';
 import dataStorage from '../utils/DataStorage';
 import axios from 'axios';
 import { FlatList } from 'react-native-gesture-handler';
+import ConfigContext from '../context/configContext';
 
 interface mangaList {
     id: string
@@ -23,14 +37,22 @@ export const Home = ({ navigation }: { navigation: any }) => {
 
     const [mangaList, setMangaList] = useState([]);
 
+    const [refreshing, setRefreshing] = useState(false);
+
     const [favoritesMangas, setFavoritesMangas] = useState([]);
 
     const [tags, setTags] = useState([]);
 
     const [activeTag, setActiveTag] = useState('');
 
+    const [isLoading, setIsLoading] = useState(true);
+
     const goToManga = (id: string) => {
         navigation.navigate('Manga', { mangaId: id })
+    }
+
+    const goToFavoriteManga = () => {
+        navigation.navigate('Favoritos')
     }
 
     const filterManga = (title: string) => {
@@ -41,16 +63,19 @@ export const Home = ({ navigation }: { navigation: any }) => {
     }
 
     const filterTags = (tag: string) => {
+        setIsLoading(true);
         setActiveTag(tag);
         if (activeTag === tag) {
             setActiveTag('');
             mangaApi.getMangaList().then(mangaList => {
                 setMangaList(mangaList);
+                setIsLoading(false);
             })
             return;
         }
         mangaApi.getMangaList(10, '', [tag]).then(mangaList => {
             setMangaList(mangaList);
+            setIsLoading(false);
         })
     }
 
@@ -65,14 +90,22 @@ export const Home = ({ navigation }: { navigation: any }) => {
         });
     }
 
-    useEffect(() => {
+    const getMangaListAndTags = () => {
+        setIsLoading(true);
         mangaApi.getMangaList().then(mangaList => {
             setMangaList(mangaList);
+            setIsLoading(false);
+            setRefreshing(false);
         })
 
         mangaApi.getTags().then(tags => {
             setTags(tags);
         })
+    }
+
+    useEffect(() => {
+
+        getMangaListAndTags();
 
         dataStorage.getLikedMangas().then(likedMangas => {
 
@@ -87,6 +120,13 @@ export const Home = ({ navigation }: { navigation: any }) => {
 
     }, [])
 
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setActiveTag('');
+        getMangaListAndTags();
+        atualizarFavoritos();
+      }, []);
+
     function truncateText(text = '') {
         if (text.length <= 42) {
           return text;
@@ -95,11 +135,11 @@ export const Home = ({ navigation }: { navigation: any }) => {
       }
 
     return (
-        <ScrollView style={Styles.container}>
+        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} style={Styles.container}>
             <StatusBar backgroundColor="#EB5757" style="light" />
             
             <View style={Styles.header}>
-
+               
                 <View style={Styles.welcome}>
                     <View>
                         <Text style={Styles.welcomeText}>Welcome to MangaRabbit</Text>
@@ -110,6 +150,9 @@ export const Home = ({ navigation }: { navigation: any }) => {
                 <View style={Styles.inputContainer}>
                     <Ionicons name="search" size={24} color="#8E8E93" />
                     <TextInput onChangeText={filterManga} placeholder="Search here" style={Styles.input} />
+                    <TouchableOpacity activeOpacity={1} onPress={goToFavoriteManga}>
+                        <Ionicons name="heart" size={24} color="#EB5757" />
+                    </TouchableOpacity>
                 </View>
 
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={Styles.tagsContainer}>
@@ -122,11 +165,16 @@ export const Home = ({ navigation }: { navigation: any }) => {
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
-            </View>
 
-            <Text style={Styles.title}>Popular mangas</Text>
+                
+            </View>
+            
+            {!isLoading && activeTag === '' ? <Text style={Styles.title}>Popular mangas</Text> : null}
             <View style={Styles.body}>
-                {
+                <View style={{flex: 1, width: '100%'}}>
+                    {isLoading ? <ActivityIndicator size="large" color="#EB5757" />: null}
+                </View>
+                {!isLoading ?
                     mangaList.map((manga, index) => (
                         <View style={Styles.cardContainer} key={index}>
                             <TouchableOpacity activeOpacity={1} style={Styles.card} onPress={() => goToManga(manga.id)}>
@@ -136,7 +184,7 @@ export const Home = ({ navigation }: { navigation: any }) => {
                             </TouchableOpacity>
                         </View>
                     ))
-                }
+                : null}
             </View>
 
         </ScrollView>

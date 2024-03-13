@@ -5,6 +5,7 @@ import { MangaPage } from "../pages/Manga";
 import { MangaPages } from "../pages/MangaPages";
 import { LikedMangas } from "../pages/LikedMangas";
 
+
 const Stack = createNativeStackNavigator();
 
 export const Router = () => {
@@ -14,7 +15,7 @@ export const Router = () => {
                 <Stack.Screen options={{ headerShown: false }} name="Home" component={Home} />
                 <Stack.Screen options={{ headerShown: true, title: '' }} name="Manga" component={MangaPage} />
                 <Stack.Screen name="Chapter" component={MangaPages} />
-                <Stack.Screen options={{ headerShown: true }} name="Favoritos" component={LikedMangas} />
+                <Stack.Screen options={{ headerShown: true, title: 'Favoritos' }} name="Favoritos" component={LikedMangas} />
             </Stack.Navigator>
         </NavigationContainer>        
     )

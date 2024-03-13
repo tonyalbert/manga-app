@@ -40,7 +40,14 @@ export const MangaPage = ({ route, navigation }) => {
 
     const [isLoading, setIsLoading] = useState(true);
 
-    const [isLiked, setIsLiked] = useState(false)
+    const [isLiked, setIsLiked] = useState(false);
+
+    const [readChapters, setReadChapters] = useState<string[]>([]);
+
+    const getReadChapters = async () => {
+        const readChapters = await dataStorage.getReadChapters(mangaId)
+        setReadChapters(readChapters)
+    }
 
     const likeManga = async () => {
         const likedMangas = await dataStorage.getLikedMangas()
@@ -54,23 +61,27 @@ export const MangaPage = ({ route, navigation }) => {
         }
     }
 
-    const goToChapter = (id: string) => {
+    const goToChapter = async (id: string) => {
+        await dataStorage.saveLastReadChapter(mangaId, id)
         navigation.navigate('Chapter', { chapterId: id })
+        getReadChapters();
     }
 
     useEffect(() => {
         mangaApi.getManga(mangaId).then(manga => {
             setManga(manga)
-        })
+        });
 
         mangaApi.getMangaChapters(mangaId).then(chapters => {
             setChapters(chapters)
             setIsLoading(false)
-        })
+        });
 
         dataStorage.getLikedMangas().then(likedMangas => {
             setIsLiked(likedMangas.includes(mangaId))
-        })
+        });
+
+        getReadChapters();
 
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     }, [])
@@ -82,9 +93,8 @@ export const MangaPage = ({ route, navigation }) => {
     }, [isLiked])
 
     return (
-        <ScrollView style={Styles.container}>
+        <ScrollView disableScrollViewPanResponder style={Styles.container}>
 
-            {/* like button */}
             <View style={Styles.likeContainer}>
                 <TouchableOpacity
                     style={Styles.likeButton}
@@ -99,17 +109,18 @@ export const MangaPage = ({ route, navigation }) => {
             </View>
 
             <View style={Styles.coverContainer}>
+
                 <Image
-                    source={{ uri: manga.cover }}
+                    source={{ uri: manga.cover ? manga.cover : 'https://madeirasalba.com.br/wp-content/uploads/2020/01/2325-e1578681696845-500x500.jpg' }}
                     style={Styles.cover}
                 />
             </View>
 
             <View style={Styles.infoContainer}>
                 <Text style={Styles.title}>{manga.title}</Text>
-                <Text style={Styles.year}>{manga.year}</Text>
+                <Text style={Styles.year}>{manga.year ? manga.year : ''}</Text>
                 <Text style={Styles.year}>{manga.status}</Text>
-                <Text>{manga.lastChapter}</Text>
+                <Text>{manga.lastChapter ? `Last chapter: ${manga.lastChapter}` : ''}</Text>
                 <Text>{manga.description}</Text>
             </View>
 
@@ -118,9 +129,9 @@ export const MangaPage = ({ route, navigation }) => {
                     data={chapters}
                     numColumns={5}
                     renderItem={({ item }) => (
-                        <TouchableOpacity style={Styles.chapter} onPress={() => goToChapter(item.id)}>
+                        <TouchableOpacity style={readChapters.includes(item.id) ? Styles.readedChapter : Styles.chapter} onPress={() => goToChapter(item.id)}>
                             <View>
-                                <Text>{item.chapter}</Text>
+                                <Text style={readChapters.includes(item.id) ? Styles.readedChapterText : Styles.chapterText}>{item.chapter}</Text>
                             </View>
                         </TouchableOpacity>
                     )}
@@ -131,7 +142,6 @@ export const MangaPage = ({ route, navigation }) => {
                     contentContainerStyle={{ 
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        /* gap */
                         paddingVertical: 10
                      }}
                 />
@@ -180,6 +190,13 @@ const Styles = StyleSheet.create({
         color: '#666',
         textAlign: 'center',
     },
+    continueButton: {
+        backgroundColor: '#EB5757',
+        padding: 10,
+        borderRadius: 5,
+        width: '100%',
+        marginTop: 20
+    },
     chaptersContainer: {
         paddingHorizontal: 20
     },
@@ -192,5 +209,24 @@ const Styles = StyleSheet.create({
         marginBottom: 10,
         borderColor: '#d4d4d4',
         borderWidth: 1
+    },
+    readedChapter: {
+        width: 70,
+        height: 50,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10,
+        backgroundColor: '#EB5757',
+        borderColor: '#d4d4d4',
+        borderWidth: 1
+    },
+    readedChapterText: {
+        fontSize: 14,
+        color: '#fff'
+    },
+    chapterText: {
+        fontSize: 14,
+        color: '#000'
     }
 })
